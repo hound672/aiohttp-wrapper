@@ -1,7 +1,10 @@
 from aiohttp import web
 from aiohttp import hdrs
 from aiohttp.web_response import StreamResponse
+from pydantic import ValidationError
 
+
+from aiohttp_wrapper import exceptions as wrapper_exceptions
 
 class ValidateView(web.View):
     """View class with validations"""
@@ -21,7 +24,15 @@ class ValidateView(web.View):
             try:
                 body_data = await self.request.json()
             except Exception as e:
-                return web.json_response({'error': 'error'})
+                raise wrapper_exceptions.HttpBadRequest(reason='ERR_NO_JSON')
+
+            try:
+                body_values = body_schema(**body_data)
+            except ValidationError as e:
+                raise wrapper_exceptions.HttpBadRequest(
+                    reason='ERR_VALIDATION',
+                    details=e.errors()
+                )
 
         resp = await method()
         return resp

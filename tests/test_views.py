@@ -21,18 +21,11 @@ class _Index(ValidateView):
         return web.json_response({})
 
 @pytest.fixture
-async def app_test_view(loop):
-    """Create app for test view"""
-    app = web.Application()
+async def client_test_mixin(app, aiohttp_client):
     app.add_routes([
         web.view('/index', _Index, name='index')
     ])
-    return app
-
-
-@pytest.fixture
-async def client_test_mixin(app_test_view, aiohttp_client):
-    client = await aiohttp_client(app_test_view)
+    client = await aiohttp_client(app)
     return client
 
 ########################################################
@@ -40,12 +33,31 @@ async def client_test_mixin(app_test_view, aiohttp_client):
 async def test_get_empty(client_test_mixin):
     res = await client_test_mixin.get('/index')
     data = await res.json()
+
+    assert res.status == 200
     assert data == {}
 
 
-async def test_post_validate(client_test_mixin):
-    # res = await client_test_mixin.post('/index', json={'1':'2'})
+async def test_wo_json(client_test_mixin):
     res = await client_test_mixin.post('/index')
-    data = await res.text()
-    pass
+    data = await res.json()
 
+    assert res.status == 400
+    assert data['reason'] == 'ERR_NO_JSON'
+
+async def test_validate_data_fail(client_test_mixin, faker):
+    req = {faker.word(): faker.word()}
+    res = await client_test_mixin.post('/index', json=req)
+    data = await res.json()
+
+    assert res.status == 400
+    assert data['reason'] == 'ERR_VALIDATION'
+
+
+async def test_validate_data_success(client_test_mixin, faker):
+    req = {'name': faker.word()}
+    res = await client_test_mixin.post('/index', json=req)
+    data = await res.json()
+
+    assert res.status == 200
+    assert data == {}

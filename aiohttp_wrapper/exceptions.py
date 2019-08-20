@@ -1,12 +1,16 @@
-from typing import Optional
+from typing import Optional, Union, List, Dict
 
 class WrapperHttpException(Exception):
     _status_code: int
     _reason: str
-    _details: Optional[dict]
+    _details: Union[Dict, List, None]
 
-    def __init__(self, details: Optional[dict] = None):
+    def __init__(self,
+                 reason: Optional[str] = None,
+                 details: Union[Dict, List, None] = None):
         self._details = details
+        if reason is not None:
+            self._reason = reason
 
     @property
     def status_code(self) -> int:
@@ -17,7 +21,7 @@ class WrapperHttpException(Exception):
         return self._reason
 
     @property
-    def details(self) -> Optional[dict]:
+    def details(self) -> Union[Dict, List, None]:
         return self._details
 
 

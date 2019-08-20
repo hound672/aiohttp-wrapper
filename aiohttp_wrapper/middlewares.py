@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Any, Union
+from typing import Dict, Optional, Any, Union, List
 
 from aiohttp import web, web_exceptions
 
@@ -15,7 +15,7 @@ async def middleware_error(request: web.Request, handler: Any) -> web.Response:
 
     def _error_http_response(status: int,
                              reason: Optional[str] = None,
-                             details: Optional[dict] = None) -> web.Response:
+                             details: Union[Dict, List, None] = None) -> web.Response:
         """
         Return aiohttp response with error and pass payload/reason into it.
 
@@ -24,7 +24,7 @@ async def middleware_error(request: web.Request, handler: Any) -> web.Response:
         :param errors: description of error/errors
         :return None
         """
-        text_dict: Dict[str, Union[str, Dict]] = {}
+        text_dict: Dict[str, Union[str, Dict, List]] = {}
 
         if reason is not None:
             text_dict['reason'] = reason

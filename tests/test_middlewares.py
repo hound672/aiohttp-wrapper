@@ -16,7 +16,7 @@ class _AiohttpExceptions(web.View):
 
 class _WrapperException(web.View):
     async def get(self):
-        raise wrapper_exceptions.HttpBadRequest({
+        raise wrapper_exceptions.HttpBadRequest(details={
             'error_1': 'describe_1',
             'error_2': 'describe_2'
         })

@@ -31,6 +31,7 @@ def init_aiohttp_wrapper(*,
     :param config_model: Pydantic's model for validate config
     :return:
     """
+    
     app = web.Application()
     app.middlewares.append(middleware_error)
 

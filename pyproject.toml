@@ -8,9 +8,10 @@ authors = ["Vasilii Bliznetcov <hound672@gmail.com>"]
 python = "^3.7"
 aiohttp = "3.5"
 pydantic = "0.31.1"
+pyyaml = "5.1"
 
 [tool.poetry.dev-dependencies]
-pytest = "^3.0"
+pytest = "3.0"
 mypy = "0.720.0"
 pytest-aiohttp = "0.3.0"
 pytest-cov = "2.6.1"
